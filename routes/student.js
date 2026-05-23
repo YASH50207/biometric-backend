@@ -67,7 +67,7 @@ router.post('/register', [
 // Get all students
 router.get('/', async (req, res) => {
   try {
-    const students = await Student.find().sort({ enrolledDate: -1 });
+    const students = await Student.find().sort({ fingerprintId: 1 });
 
     res.json({
       success: true,
