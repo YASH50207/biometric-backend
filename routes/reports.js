@@ -537,8 +537,9 @@ router.get('/live-feed', async (req, res) => {
 // All students with attendance percentage
 router.get('/students-roster', async (req, res) => {
   try {
-    const students = await Student.find({ status: 'Active' });
-    
+    // THIS IS THE FIX: Added .sort({ fingerprintId: 1 })
+    const students = await Student.find({ status: 'Active' }).sort({ fingerprintId: 1 });
+
     const roster = await Promise.all(
       students.map(async (student) => {
         const totalRecords = await Attendance.countDocuments({ studentId: student._id });
@@ -547,7 +548,7 @@ router.get('/students-roster', async (req, res) => {
           $or: [{ status: 'Present' }, { status: 'Late' }]
         });
 
-        const percentage = totalRecords > 0 
+        const percentage = totalRecords > 0
           ? Math.round((presentRecords / totalRecords) * 100)
           : 0;
 
@@ -569,7 +570,6 @@ router.get('/students-roster', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
 // ============ GET /api/reports/student-history/:studentId ============
 // Individual student's attendance history
 router.get('/student-history/:studentId', async (req, res) => {
